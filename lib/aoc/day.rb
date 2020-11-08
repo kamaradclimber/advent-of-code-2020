@@ -6,6 +6,7 @@ class Day
     valid_part!
     @input = input
   end
+  attr_reader :input
 
   def part1?
     @part == 1
