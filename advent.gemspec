@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = if Date.today < Date.new(2020, 12, 1)
                          '0'
                        else
-                         Date.day.to_s
+                         Date.today.to_s
                        end
   spec.version       = "#{spec.version}-alpha-#{ENV['TRAVIS_BUILD_NUMBER']}" if ENV['TRAVIS']
   spec.version       = ENV['TRAVIS_TAG'] if ENV['TRAVIS_TAG'] && !ENV['TRAVIS_TAG'].empty?
