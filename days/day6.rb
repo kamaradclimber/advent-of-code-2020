@@ -29,8 +29,4 @@ class Day6 < Day
   def groups
     input.split("\n\n")
   end
-
-  def char_set(group)
-    group.gsub("\n", '').chars.uniq
-  end
 end
