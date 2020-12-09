@@ -10,7 +10,7 @@ RSpec.describe Day23 do
     }.each do |example, solution|
       context "example #{example[0..15]}" do
         let(:input) { example }
-        pending "works on example #{example}" do
+        pending "works on example #{example[0..15].gsub("\n", ', ')}" do
           expect(subject.solve).to eq(solution)
         end
       end
@@ -30,7 +30,7 @@ RSpec.describe Day23 do
     }.each do |example, solution|
       context "example #{example[0..15]}" do
         let(:input) { example }
-        pending "works on example #{example}" do
+        pending "works on example #{example[0..15].gsub("\n", ', ')}" do
           expect(subject.solve).to eq(solution)
         end
       end
