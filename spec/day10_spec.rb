@@ -18,7 +18,7 @@ RSpec.describe Day10 do
 6
 12
 4' => 35,
-'28
+      '28
 33
 18
 42
@@ -80,7 +80,7 @@ RSpec.describe Day10 do
 6
 12
 4' => 8,
-'28
+      '28
 33
 18
 42
@@ -121,7 +121,7 @@ RSpec.describe Day10 do
     end
 
     context 'real input' do
-      pending 'finds a solution for part2' do
+      it 'finds a solution for part2' do
         solution = subject.solve
         puts "Solution for part 2 is #{solution}"
       end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'aoc'
+require 'pry'
 
 class Day10 < Day
   def solve_part1
@@ -25,18 +26,34 @@ class Day10 < Day
     chargers = input.split("\n").map(&:to_i).sort
     builtin = chargers.max + 3
 
+    diffs = ([0] + chargers + [builtin]).each_cons(2).map { |a, b| b - a }
+    # ugly move to string to make a simple split. There is surely an enumerable method for this
+    subsequences_combinations = diffs.join.split('3').map { |el| el.chars.map(&:to_i) }.map do |sub|
+      next 1 if sub.size < 2
+
+      # TODO: we shoudll not have to convert back to numbers (the
+      # subsequences could be refactored to deal with diffs only)
+      sequence = (sub + [3]).inject([0]) { |mem, el| mem + [mem.last + el] }
+      start = sequence.first
+      last = sequence.last
+      subsub = sequence[1..sequence.size - 2]
+      subsequences(start, subsub, last)
+    end
+    subsequences_combinations.inject(1) { |mem, el| mem * el }
+  end
+
+  # non optimimed version of part2
+  def subsequences(start, sub, last)
     to_test = []
-    to_test << chargers
+    to_test << sub
     valid_combinations = 0
-    puts "Min size #{builtin / 3}"
     while to_test.any?
-      puts "Combinaisons to test #{to_test.size}, size #{to_test.first.size}"
       next_to_test = Set.new
       to_test
-        .select { |subset| find_path(0, subset, builtin) }
+        .select { |subset| find_path(start, subset, last) }
         .tap { |subsets| valid_combinations += subsets.size }
         .each do |subset|
-        children(subset).to_a.each do |s|
+        subset.combination(subset.size - 1).to_a.each do |s|
           next_to_test << s
         end
       end
@@ -57,6 +74,7 @@ class Day10 < Day
     chargers.sort.each do |charger|
       difference = charger - current_jolt
       return false if difference > 3
+
       current_jolt = charger
     end
     true
