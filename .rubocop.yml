@@ -25,6 +25,7 @@ Layout/LineLength:
     - '"\d+"'
     - '''\d+'''
     - '%(.+)'
+    - '^(\s*)# '
 
 Style/NumericPredicate:
   EnforcedStyle: comparison
