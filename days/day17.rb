@@ -2,6 +2,7 @@
 
 require 'aoc'
 require 'pry'
+require 'set'
 
 class Day17 < Day
   def solve_part1
@@ -109,7 +110,7 @@ class Day17 < Day
 
   class Grid
     def coords
-      @grid.keys
+      @grid.to_a
     end
 
     def relevant_points
@@ -117,15 +118,15 @@ class Day17 < Day
     end
 
     def initialize
-      @grid = Hash.new(0)
+      @grid = Set.new
     end
 
     def active?(point)
-      @grid[point] == 1
+      @grid.include?(point)
     end
 
     def active!(point)
-      @grid[point] = 1
+      @grid << point
     end
 
     def active_count
