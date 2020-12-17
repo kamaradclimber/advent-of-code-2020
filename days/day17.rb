@@ -60,7 +60,7 @@ class Day17 < Day
     alias eql? ==
 
     def hash
-      x
+      x * 100 + y * 10 + z + t
     end
 
     def neighbors_coords
