@@ -51,10 +51,10 @@ RSpec.describe Day15 do
     end
 
     context 'real input' do
-      pending 'finds a solution for part2' do
-        solution = subject.solve
-        puts "Solution for part 2 is #{solution}"
-      end
+      # it 'finds a solution for part2' do
+      #  solution = subject.solve
+      #  puts "Solution for part 2 is #{solution}"
+      # end
     end
   end
 
