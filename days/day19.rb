@@ -18,14 +18,14 @@ class Day19 < Day
     end
 
     messages.count do |message|
-      rules[0].match(message)&.empty?
+      rules[0].match(message, true)&.empty?
     end
   end
 
   def solve_part2
     @input = input
-      .gsub('8: 42', '8: 42 | 42 8')
-      .gsub('11: 42 31', '11: 42 31 | 42 11 31')
+             .gsub(/\n8: 42\n/, "\n8: 42 | 42 8\n")
+             .gsub(/\n11: 42 31\n/, "\n11: 42 31 | 42 11 31\n")
     solve_part1
   end
 
@@ -34,7 +34,7 @@ class Day19 < Day
     when Integer
       rule = rules[rule]
     when ConcatRule
-      rules.each_with_index do |r,i|
+      rule.each_with_index do |r,i|
         rule[i] = resolve(rules, r)
       end
     when UnionRule
@@ -57,12 +57,7 @@ class Day19 < Day
         r.rule2 = parse_rule(Regexp.last_match(2))
       end
     when /^(.+)$/
-      ConcatRule.new.tap do |r|
-        # ugly abuse of dynamic typing, we will resolve this after parsing all rules
-
-        r.rule1 = Regexp.last_match(1).to_i
-        r.rule2 = Regexp.last_match(2).to_i
-      end
+      ConcatRule.new($1)
     else
       raise "Unparsable rule: '#{rule}'"
     end
@@ -76,8 +71,13 @@ class Day19 < Day
 
     # @return [String] part of the string that was not matched
     #                  or nil/false if did not matched
-    def match(string)
-      string[1..] if string[0] == char
+    def match(string, must_be_terminal)
+      if string[0] == char
+        return nil if !must_be_terminal && string.size == 1
+        string[1..]
+      else
+        nil
+      end
     end
   end
 
@@ -85,10 +85,9 @@ class Day19 < Day
     attr_accessor :rules
 
     def initialize(s)
-      @rules = []
-      s.split(' ')
+      super()
+      @rules = s.split(' ').map(&:to_i)
     end
-
 
     def [](i)
       @rules[i]
@@ -102,10 +101,13 @@ class Day19 < Day
       @rules.each_with_index(&block)
     end
 
-    def match(string)
+    def match(string, must_be_terminal)
+      return nil if string == ""
+
       rem = string
-      @rules.each do |r|
-        rem = r.match(rem)
+      @rules.each_with_index do |r, i|
+        binding.pry if $DEBUG
+        rem = r.match(rem, must_be_terminal && (i == @rules.size - 1))
         return nil unless rem
       end
       rem
@@ -115,8 +117,29 @@ class Day19 < Day
   class UnionRule < Rule
     attr_accessor :rule1, :rule2
 
-    def match(string)
-      rule1.match(string) || rule2.match(string)
+    def match(string, must_be_terminal)
+      return nil if string == ""
+
+      rem1 = rule1.match(string, must_be_terminal)
+      rem2 = rule2.match(string, must_be_terminal)
+
+      #return rem2 unless rem1
+      #return rem1 unless rem2
+      if must_be_terminal
+        if rem1 != '' && rem2 != ''
+          return nil
+        else
+          ''
+        end
+      else
+        [rem1,rem2] if rem1 && rem2
+        rem1 || rem2
+      end
+      # from here, both rem are non empty
+      # in part1 we can be greedy without any issue because there are no loops
+
+
+
     end
   end
 end

@@ -7,13 +7,12 @@ RSpec.describe Day19 do
   describe 'part 1' do
     let(:part) { 1 }
     {
-      '0: 4 6
+      '0: 4 1 5
 1: 2 3 | 3 2
 2: 4 4 | 5 5
 3: 4 5 | 5 4
 4: "a"
 5: "b"
-6: 1 5
 
 ababbb
 bababa
@@ -40,7 +39,15 @@ aaaabbb' => 2
   describe 'part 2' do
     let(:part) { 2 }
     {
-      '42: 9 14 | 10 1
+      '0: 1 0 | 1
+1: "a"
+
+aaaaaaa'=> 1,
+      '0: 1 | 1 0
+1: "a"
+
+aaaaaaa'=> 1,
+'42: 9 14 | 10 1
 9: 14 27 | 1 26
 10: 23 14 | 28 1
 1: "a"
@@ -91,6 +98,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba' => 12
       context "example #{example[0..15]}" do
         let(:input) { example }
         pending "works on example #{example[0..15].gsub("\n", ', ')}" do
+          puts example
           expect(subject.solve).to eq(solution)
         end
       end
