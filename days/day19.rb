@@ -22,13 +22,21 @@ class Day19 < Day
     end
   end
 
+  def solve_part2
+    @input = input
+      .gsub('8: 42', '8: 42 | 42 8')
+      .gsub('11: 42 31', '11: 42 31 | 42 11 31')
+    solve_part1
+  end
+
   def resolve(rules, rule)
     case rule
     when Integer
       rule = rules[rule]
     when ConcatRule
-      rule.rule1 = rules[rule.rule1]
-      rule.rule2 = rules[rule.rule2]
+      rules.each_with_index do |r,i|
+        rule[i] = resolve(rules, r)
+      end
     when UnionRule
       rule.rule1 = resolve(rules, rule.rule1)
       rule.rule2 = resolve(rules, rule.rule2)
@@ -42,17 +50,18 @@ class Day19 < Day
       Regexp.last_match(1).to_i
     when /^"(.)"$/
       ExactRule.new.tap { |r| r.char = Regexp.last_match(1) }
-    when /^(\d+) (\d+)$/
-      ConcatRule.new.tap do |r|
-        # ugly abuse of dynamic typing, we will resolve this after parsing all rules
-        r.rule1 = Regexp.last_match(1).to_i
-        r.rule2 = Regexp.last_match(2).to_i
-      end
     when /^(.+) \| (.+)$/
       UnionRule.new.tap do |r|
         # ugly abuse of dynamic typing, we will resolve this after parsing all rules
         r.rule1 = parse_rule(Regexp.last_match(1))
         r.rule2 = parse_rule(Regexp.last_match(2))
+      end
+    when /^(.+)$/
+      ConcatRule.new.tap do |r|
+        # ugly abuse of dynamic typing, we will resolve this after parsing all rules
+
+        r.rule1 = Regexp.last_match(1).to_i
+        r.rule2 = Regexp.last_match(2).to_i
       end
     else
       raise "Unparsable rule: '#{rule}'"
@@ -73,15 +82,32 @@ class Day19 < Day
   end
 
   class ConcatRule < Rule
-    attr_accessor :rule1, :rule2
+    attr_accessor :rules
+
+    def initialize(s)
+      @rules = []
+      s.split(' ')
+    end
+
+
+    def [](i)
+      @rules[i]
+    end
+
+    def []=(i,val)
+      @rules[i] = val
+    end
+
+    def each_with_index(&block)
+      @rules.each_with_index(&block)
+    end
 
     def match(string)
-      rem = rule1.match(string)
-      return nil unless rem
-
-      rem = rule2.match(rem)
-      return nil unless rem
-
+      rem = string
+      @rules.each do |r|
+        rem = r.match(rem)
+        return nil unless rem
+      end
       rem
     end
   end
